@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<arquillian xmlns="http://jboss.org/schema/arquillian"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="
+        http://jboss.org/schema/arquillian
+        http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+  <defaultProtocol type="Servlet 3.0"/>
+  <engine>
+    <property name="deploymentExportPath">target/deployments</property>
+  </engine>
+
+  <extension qualifier="docker">
+    <property name="serverVersion">1.19</property>
+    <!--tag::arquillian_cube_orchestration_config[]-->
+    <property name="autoStartContainers">${db:mysql_latest}</property>
+    <property name="dockerContainers">
+      wildfly:
+        buildImage:
+          dockerfileLocation: src/test/resources/wildfly
+          noCache: true
+          remove: true
+        portBindings: [8081->8080/tcp, 9991->9990/tcp]
+        await:
+          strategy: polling
+      wildfly_mysql_latest:
+        extends: wildfly
+        links:
+          - mysql_latest:mysql
+      mysql_latest:
+        image: mysql:latest
+        exposedPorts: [3306/tcp]
+        # end::arquillian_cube_orchestration_config[]
+        env: [ MYSQL_ROOT_PASSWORD=letmein, MYSQL_DATABASE=ape, MYSQL_USER=ape, MYSQL_PASSWORD=letmein ]
+        await:
+          strategy: sleeping
+          sleepTime: 2 s
+      wildfly_mysql_5_5:
+        extends: wildfly
+        links:
+          - mysql_5_5:mysql
+      mysql_5_5:
+        image: mysql:5.5.40
+        exposedPorts: [3306/tcp]
+        env: [ MYSQL_ROOT_PASSWORD=letmein, MYSQL_DATABASE=ape, MYSQL_USER=ape, MYSQL_PASSWORD=letmein ]
+        await:
+          strategy: sleeping
+          sleepTime: 2 s
+    </property>
+  </extension>
+
+  <container qualifier="wildfly_${db:mysql_latest}" default="true"><!--2-->
+    <configuration>
+      <property name="managementPort">9991</property>
+      <property name="username">admin</property>
+      <property name="password">Admin#70365</property>
+    </configuration>
+  </container>
+  <!--end::arquillian_cube_jpa_config[]-->
+
+  <extension qualifier="persistence">
+    <property name="defaultDataSource">java:/mysql_ds</property>
+  </extension>
+
+  <extension qualifier="transaction">
+    <property name="manager">java:jboss/UserTransaction</property>
+  </extension>
+
+  <extension qualifier="persistence-dbunit">
+    <property name="schema">ape</property>
+    <property name="datatypeFactory">org.dbunit.ext.mysql.MySqlDataTypeFactory</property>
+    <property name="metadataHandler">org.dbunit.ext.mysql.MySqlMetadataHandler</property>
+    <property name="caseSensitiveTableNames">true</property>
+    <property name="excludeTablesFromComparisonWhenEmptyExpected">hibernate_sequence</property>
+    <property name="excludeTablesFromCleanup">hibernate_sequence</property>
+    <property name="filterTables">true</property>
+  </extension>
+
+  <extension qualifier="persistence-script">
+    <property name="sqlStatementDelimiter">NEW_LINE</property>
+  </extension>
+
+
+</arquillian>

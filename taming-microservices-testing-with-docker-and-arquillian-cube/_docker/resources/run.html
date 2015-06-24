@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Asciidoctor light container</title>
+    <style>
+
+    </style>
+  </head>
+  <body>
+    <h1>Asciidoctor DZSlides light container</h1>
+    <h2>Link version</h2>
+    <ul>
+      <li><span id="status-link">SCRIPT IS RUNNING?</span> - <button onclick="javascript:convertToSlides();">Click to generate file (Regenerate every 2 seconds)</button></li>
+      <li> <a target="_normal" href="/slides.html">View Slides</a>
+      <li> <a target="_onstage" href="/dzslides/shells/onstage.html#../../slides.html">On stage mode</a></li>
+      <li> <a target="_embed" href="/dzslides/shells/embedder.html#../../slides.html">Embedder mode</a></li>
+    </ul>
+    <textarea id="logs-link" cols="50" rows="5"></textarea>
+    <hr/>
+
+    <h2>Standalone version</h2>
+    <ul><ol><span id="status-standalone">SCRIPT IS RUNNING?</span> - <button onclick="javascript:convertToOneFile();">Click to generate file.</button></ol>
+      <ol> <a href="/slides-standalone.html" target="_standalone">View Slides</a></ol>
+    </ul>
+
+    <textarea id="logs-standalone" cols="50" rows="5"></textarea>
+
+    <script>
+      var  convertToSlides = function() {
+        var wsUrl = 'ws://' + window.location.hostname + ':8080/slides-to-file.sh';
+        var ws = new WebSocket(wsUrl);
+        ws.onopen = function() {
+          document.getElementById('status-link').style.backgroundColor = '#cfc';
+        };
+        ws.onclose = function() {
+          document.getElementById('status-link').style.backgroundColor = "red";
+        };
+        ws.onmessage = function(event) {
+          //console.log(event);
+          document.getElementById('logs-link').value =  JSON.stringify(event);
+        };
+      }
+      //convert slides into one HTML standalone file
+      var  convertToOneFile = function() {
+        var wsUrl = 'ws://' + window.location.hostname + ':8080/slides-to-export.sh';
+        var ws = new WebSocket(wsUrl);
+        ws.onopen = function() {
+          document.getElementById('status-standalone').style.backgroundColor = '#cfc';
+        };
+        ws.onclose = function() {
+          document.getElementById('status-standalone').style.backgroundColor = "red";
+        };
+        ws.onmessage = function(event) {
+          //console.log(event);
+          document.getElementById('logs-standalone').value = JSON.stringify(event);
+        };
+      }
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,42 @@
+[.topic.band]
+== !
+
+[{caption-off}, crole="band"]
+.Microservices
+image::microservices.jpg[]
+
+[.topic.bannerleft]
+== Principles
+
+[{caption-off}]
+image::bees.jpg[]
+
+* {point-label} Single Responsibility
+* {point-label} Loosely Coupled
+* {point-label} Bounded Contexts
+* {point-label} Deployed Independently
+
+
+[.topic.lumaxart]
+== &#160;
+
+"Gather together those things that change for the same reason, and separate those things that change for different reasons."
+-- Robert C. Martin
+
+[.topic.bannerleft]
+== Benefits
+
+[{caption-off}]
+image::freedom.jpg[]
+
+* {point-label} Focus on *simplicity*
+* {point-label} Developer autonomy (*polyglot*)
+* {point-label} Maintainability
+* {point-label} Composability
+* {point-label} Performance and scalability
+
+[source,bash]
+----
+ps aux | grep eclipse | grep -v grep | awk '{print $2}' | xargs kill
+----
+

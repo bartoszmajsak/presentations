@@ -1,0 +1,20 @@
+[.topic.bannerleft.shadow]
+== _Aslak Knutsen_
+
+[{caption-off}]
+image::aslak-profile.jpg[Aslak]
+
+* {point-label} Arquillian Project Lead
+* {point-label} Red Hat
+* {point-label} {twitter} {github} @aslakknutsen
+
+[.topic.bannerleft.shadow]
+== _Bartosz Majsak_
+
+[{caption-off}]
+image::bartosz-profile.jpg[Bartosz]
+
+* {point-label} Java Developer by day
+* {point-label} Open source junkie by night
+* {point-label} {twitter} @majson {github} @bartoszmajsak
+

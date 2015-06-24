@@ -1,0 +1,11 @@
+[.intro.topic.lumaxart]
+== *Thank you*
+
+[.topic.text]
+== *Next steps*
+
+* {point-label} http://arquillian.org[arquillian.org]
+* {point-label} http://discuss.arquillian.org[discuss.arquillian.org]
+
+[.right]
+image::arquillian.png[Ike,200,200]

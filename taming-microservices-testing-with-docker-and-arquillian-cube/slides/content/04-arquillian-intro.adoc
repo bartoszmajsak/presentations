@@ -1,0 +1,86 @@
+[.intro.topic.lumaxart]
+== Introduction to *Arquillian*
+
+== !
+[{caption-off}]
+image::1_select_a_container.png[]
+
+== !
+[{caption-off}]
+image::2_start_container.png[]
+
+== !
+[{caption-off}]
+image::3_package_test_archive.png[]
+
+== !
+[{caption-off}]
+image::4_run_test_in_container.png[]
+
+== !
+[{caption-off}]
+image::5_test_result.png[]
+
+== !
+[{caption-off}]
+image::6_disconnect_container.png[]
+
+[.source.topic.code-small]
+== Write *In-Container* Test
+
+[source, java]
+----
+include::../demo/02_arquillian_intro/src/test/java/org/arquillian/example/service/VolumeUnitsConverterInContainerTest.java[tags="arquillian_intro_incontainer_test"]
+----
+
+<1> Enable *Arquillian* JUnit Runner
+<2> *Shrinkwrap* fluent API for creating deployable artifact programmatically
+<3> Test Enrichment
+
+[.source.topic.code-small]
+== Write *client* Test
+
+[source, java]
+----
+include::../demo/02_arquillian_intro/src/test/java/org/arquillian/example/service/VolumeUnitsConverterResourceTest.java[tags="arquillian_intro_rest_test"]
+----
+<1> Deploy your application *standalone* to test from outside the container
+<2> *Shrinkwrap* lets you add packages recursively
+<3> Injection of deployed application URL
+
+
+[.source.topic]
+== Add *Arquillian* to your project
+
+[source,xml]
+----
+include::../demo/02_arquillian_intro/pom.xml[tags="arquillian_setup,arquillian_junit"]
+----
+<1> Arquillian comes in `bom` format. Add specific dependencies explicitly.
+<2> Select test runner of your choice (_JUnit_, _TestNG_, _Spock_ etc)
+
+[.source.topic]
+== Add *Container* of your choice
+[source,xml]
+----
+include::../demo/02_arquillian_intro/pom.xml[tags=wildfly]
+----
+
+[.right]
+image::arquillian.png[Ike,200,200]
+
+[.intro.topic.lumaxart]
+== *Demo* time
+
+[.topic.text]
+== *Arquillian* principles
+
+* {point-label} Portable tests
+* {point-label} Execute from wherever you want
+* {point-label} Testing Platform, not yet another testing library
+* {point-label} Flexible and extensible
+
+
+
+
+

@@ -1,0 +1,24 @@
+:sectids!:
+:experimental:
+:icons: font
+:imagesdir: assets/images
+:source-highlighter: highlightjs
+:language: no-highlight
+:macros-on: subs="macros"
+:caption-off: caption=""
+:title-off: title="", caption=""
+:backend: dzslides
+:dzslides-aspect: 16-9
+:dzslides-style: ../../../assets/styles/devnation
+:dzslides-transition: fade
+:dzslides-fonts: family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,700,600,300,800
+:dzslides-highlight: tomorrow-night-bright
+:count-label: pass:quotes,attributes[ icon:angle-double-right[]]
+:point-label: pass:quotes,attributes[ icon:caret-right[role=light]]
+:point-label-detail: pass:quotes,attributes[ icon:caret-right[role=dark]]
+:heart-label: pass:quotes,attributes[ icon:heart[]]
+:hashtag: #arquillian #docker
+:twitter: pass:quotes,attributes[ icon:twitter[role=light]]
+:github: pass:quotes,attributes[ icon:github[role=light]]
+:star: pass:quotes,attributes[ icon:star[role=light]]
+:fork: pass:quotes,attributes[ icon:code-fork[role=light]]
