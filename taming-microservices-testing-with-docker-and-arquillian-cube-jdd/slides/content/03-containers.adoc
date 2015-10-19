@@ -1,0 +1,47 @@
+[.topic.band]
+== !
+
+[{caption-off}, crole="band"]
+.Containers
+image::containers.jpg[]
+
+[.topic.bannerleft]
+== Docker *Lightweight VM*
+[{caption-off}]
+image::docker.png[Docker]
+
+* {point-label} Application container engine  
+* {point-label} Runs on top of Linux kernel ***
+* {point-label} Own process space & network interface
+
+
+[.topic.text]
+== _How to build a Docker image?_
+
+* {point-label} Use `Dockerfile`
+* {point-label} Use `docker-compose`
+* {point-label} Modify existing image `docker pull <image>`
+
+[{caption-off}]
+image::docker.png[Docker]
+
+
+[.topic.source]
+== Sample Dockerfile
+
+[source,yaml]
+----
+include::../demo/01_docker/Dockerfile[]
+----
+
+[source,bash]
+----
+include::../demo/01_docker/docker.sh[]
+
+docker ps
+CONTAINER ID        IMAGE                          COMMAND                PORTS                    
+368bb70fa1f6        jdd2015/webserver              "/bin/sh -c 'while t   0.0.0.0:8081->8081/tcp                       
+----
+
+[.intro.topic.lumaxart]
+== *Demo* time

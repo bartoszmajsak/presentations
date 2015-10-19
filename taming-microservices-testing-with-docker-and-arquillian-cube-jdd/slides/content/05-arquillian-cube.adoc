@@ -1,0 +1,307 @@
+[.topic.band]
+== !
+
+[{caption-off}, crole="band"]
+.Arquillian *Cube*
+image::cubes.jpg[]
+
+
+[.topic.bannerleft]
+== What is *Arquillian Cube*?
+[{caption-off}]
+image::cube.jpg[Rubik]
+
+* {point-label} Manages lifecycle of *Docker* containers
+* {point-label} Uses *Arquillian* remote adapters
+* {point-label} Orchestrates containers
+* {point-label} Not only for *Application Servers*
+** {point-label} _Dropwizard_
+** {point-label} _Spring Boot_
+** {point-label} _Netty_
+** {point-label} _Node_
+** {point-label} _Vert.x_
+
+
+[.topic.bannerleft]
+== The Borg Fridge
+[{caption-off}]
+image::cube_fridge.jpg[]
+
+[.topic.text]
+== Let's run our _first test_
+
+* {point-label} Simple JPA repository test
+* {point-label} Based on `jboss/wildfly` image
+
+[source,yaml]
+----
+include::../demo/03_arquillian_cube_jpa/src/test/resources/wildfly/Dockerfile[]
+----
+
+[.topic.source]
+== Sample *JPA* test
+
+[source,java]
+----
+include::../demo/03_arquillian_cube_jpa/src/test/java/org/arquillian/example/repository/BeerRepositoryTest.java[tags="arquillian_cube_jpa_test_1"]
+        ...
+    }
+
+include::../demo/03_arquillian_cube_jpa/src/test/java/org/arquillian/example/repository/BeerRepositoryTest.java[tags="arquillian_cube_jpa_test_2"]
+
+}
+----
+
+[.topic.source]
+== Adding *Arquillian Cube*
+
+[source,xml]
+----
+include::../demo/03_arquillian_cube_jpa/pom.xml[tags="arquillian_cube_docker"]
+    <dependency>
+----
+<1> *Arquillian Cube* dependency
+
+[.topic.source]
+== Adding *Arquillian Persistence*
+
+[source,xml]
+----
+include::../demo/03_arquillian_cube_jpa/pom.xml[tags="arquillian_persistence"]
+----
+<1> *Arquillian Persistence* dependency
+
+[.topic.source]
+== Adding *Arquillian Chameleon*
+
+[source,xml]
+----
+include::../demo/03_arquillian_cube_jpa/pom.xml[tags="arquillian_chameleon"]
+----
+<1> *Arquillian Chameleon* dependency
+
+[.topic.source]
+== *Configuration*
+
+[source,xml]
+----
+include::../demo/03_arquillian_cube_jpa/src/test/resources/arquillian.xml[tags="arquillian_cube_jpa_config"]
+----
+<1> Definition of _docker_ container
+<2> Remote _WildFly_ container configuration based on _docker_ image
+
+[.intro.topic.lumaxart]
+== *Demo* time
+
+[.topic.band]
+== !
+
+[{caption-off}, crole="band"]
+.*Orchestration*
+image::real_orchestra.jpg[]
+
+[.topic.band]
+== !
+
+[{caption-off}, crole="band"]
+.*Orchestration*
+image::orchestra.jpg[]
+
+[.topic.text]
+== Orchestrated _tests_
+
+Features
+
+* {point-label} Several dependent docker containers
+* {point-label} Starting dependent container(s) before running the test
+* {point-label} Composing containers based on templates
+
+Our example
+
+* {point-label} WildFly + External database(s)
+* {point-label} Runs in the container
+
+
+[.topic.source.code-small]
+== _Arquillian configuration_
+[source, xml]
+----
+include::../demo/04_demo_cube_orchestration/src/test/resources/arquillian.xml[tags="arquillian_cube_orchestration_config"]
+    </property>
+----
+<1> *Docker* containers to start before  the *application server*
+<2> *`extends`* allows to build on top of existing _docker_ container
+<3> *`links`* to another container.
+
+[.topic.source.code-small]
+== _Docker Compose_
+[source,xml]
+----
+<property name="definitionFormat">COMPOSE</property>
+<property name="dockerContainersFile">my-compose.yaml</property>
+----
+
+[source, yaml]
+----
+wildfly:
+   build: src/test/resources/wildfly/.
+   ports:
+      - "8081:8080"
+      - "9991:9990"
+   links:
+      - mysql_latest:mysql
+
+mysql_latest:
+   image: mysql:latest
+   expose:
+      - "3306"
+   environment: 
+      - MYSQL_ROOT_PASSWORD=letmein
+      - MYSQL_DATABASE=ape
+      - MYSQL_USER=ape
+      - MYSQL_PASSWORD=letmein
+----
+
+[.intro.topic.lumaxart]
+== *Demo* time
+
+[.topic.band]
+== !
+
+[{caption-off}, crole="band"]
+.*Containerless*
+image::empty_freighter.jpg[]
+
+
+[.topic.text]
+== _Containerless_
+
+* {point-label} Any application that is deployed and runs in *Docker* container, including, but not limited to:
+** {point-label} Dropwizard
+** {point-label} Netty
+** {point-label} *Node*
+** {point-label} Spring Boot
+** {point-label} Vert.x
+** {point-label} WildFly Swarm
+* {point-label} Black-box testing
+
+[.topic.source]
+== _Arquillian Cube_ dependency
+
+[source,xml]
+.pom.xml
+----
+include::../demo/05_arquillian_cube_node/pom.xml[tags="arquillian_cube_containerless"]
+----
+
+[.source.topic.code-small]
+== arquillian.xml
+
+[source, xml]
+----
+include::../demo/05_arquillian_cube_node/src/test/resources/arquillian.xml[tags="arquillian_cube_node_config"]
+----
+<1> Sets the location of *`dockerfileTemplate`* file
+<2> Adds containerless adapter
+<3> Define name of *_docker_* container to start
+
+
+[.topic.source.code-small]
+== _express.js_ application running on _Node_
+
+[source,yaml]
+.Dockerfile template
+----
+include::../demo/05_arquillian_cube_node/src/test/resources/DockerfileTemplate[]
+----
+<1> *`${deployableFilename}`* will be replaced at runtime by archive created by *Shrinkwrap*.
+
+[.source.topic.code-small]
+== _express.js_ application
+
+[source, js]
+.app.js
+----
+include::../demo/05_arquillian_cube_node/src/test/js/app.js[]
+----
+
+[.source.topic.code-small]
+== The _test_ itself
+
+[source, java]
+----
+include::../demo/05_arquillian_cube_node/src/test/java/org/arquillian/example/StrongestBeerNodeTest.java[tags="arquillian_cube_test"]
+----
+<1> Creates a `app.tar` file with all *Node.js* resources which are then copied to the _docker_ container
+<2> *URL* of the application is injected as `@ArquillanResource`
+
+[.intro.topic.lumaxart]
+== *Demo* time
+
+[.topic.text]
+== What's coming in *Cube*?
+
+[.topic.source]
+== *Container Objects*
+
+[source,java]
+----
+public class Service {
+
+   @CubeDescriptor
+   public static Archive<?> service() {
+      return ShrinkWrap.create(GenericArchive.class)
+         .add("my_file.txt")
+         .add(Descriptors.create(CubeDescriptor.class)
+            .build(Descriptors.create(DockerDescriptor.class)
+                  .from("tomcat")
+                  .add("my_file.txt")
+            )
+         );
+   }
+
+   @Cube("mysql_1")
+   private Backend backend;
+
+   @ArquillianResource
+   private HostIP host;
+
+   public URL getServiceURL() {
+      return new URL(host.getIP(), host.getPort());
+   }
+}
+----
+
+[.topic.source]
+== *Container Objects*
+
+[source,java]
+----
+@RunWith(Arquillian.class)
+public class Test {
+
+   @Cube("service1")
+   private Service service;
+
+   @Test
+   public void shouldX() {
+      given().
+         baseUri(service.getServiceURL()).
+      when().
+         get("/service/beer").
+      then().
+         assertThat()
+            .body("name", is(equalTo("Snake Venom")))
+            .body("abv", is(equalTo("67.5")));
+   }
+}
+----
+
+[.topic.text]
+== What's coming in *Cube*?
+
+* {point-label} Container Objects
+* {point-label} Kubernetes / OpenShift v3
+* {point-label} CoreOS
+* {point-label} Mesos / Marathon
+

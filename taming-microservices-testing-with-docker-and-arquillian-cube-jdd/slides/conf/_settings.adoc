@@ -1,0 +1,28 @@
+:sectids!:
+:experimental:
+:icons: font
+:imagesdir: assets/images
+:source-highlighter: highlightjs
+:language: no-highlight
+:macros-on: subs="macros"
+:caption-off: caption=""
+:title-off: title="", caption=""
+:backend: dzslides
+:dzslides-aspect: 16-9
+:dzslides-style: ../../../assets/styles/jdd
+:dzslides-transition: fade
+:dzslides-fonts: family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,700,600,300,800
+:dzslides-highlight: tomorrow-night-bright
+:count-label: pass:quotes,attributes[ icon:angle-double-right[]]
+:point-label: pass:quotes,attributes[ icon:caret-right[role=light]]
+:point-label-detail: pass:quotes,attributes[ icon:caret-right[role=dark]]
+:heart-label: pass:quotes,attributes[ icon:heart[]]
+:hashtag: #arquillian #docker
+:twitter: pass:quotes,attributes[ icon:twitter[role=light]]
+:github: pass:quotes,attributes[ icon:github[role=light]]
+:star: pass:quotes,attributes[ icon:star[role=light]]
+:fork: pass:quotes,attributes[ icon:code-fork[role=light]]
+
+:image1: https://www.flickr.com/photos/s_volenszki/2218589271/in/photolist-4o3Ria-7qUfwF-9RuA4o-biLTac-yNf8z-hD9E92-ejmrUv-jwB4Nc-gadfQu-bDBiAy-4VH7hF-a7PbSN-ghfxUo-jo5Nbh-eXy4JE-9abnoA-qsRXdu-9HjBaU-nXkUQw-sXKR19-sVjemq-nbaLMx-haCK2a-7hsWoU-jg9V5x-ntEmgy-isyWuD-vUz7u9-oSAQtv-oxXYWd-wXgiB-pX5qYs-nx5Chg-hx685T-haBhK6-3oUH7-8NEKes-9pYBfv-wz129k-8VDien-hAEqGG-dj8GZc-7zf4F7-ekrrZw-f8H9Wp-mTia2n-6T45hB-iuZJCa-bpgKsp-7Te2Ef
+
+:image2: https://www.flickr.com/photos/125857513@N06/14767662585/in/photolist-ouY8Aa-9VZBzG-9VZBwW-8LEhMn-8LHmGL-wP2dU-5St79G-8LEhHK-8LEhDR-84qn9C-8LEhTr-8LEhPp-8LEh7g-4wva63-5M3XVM-8NNSEm-8NNSzL-8NNSxm-8LEgRZ-p6UidL-8LHn99-hYxsM-8LEiue-8LEiir-8LEicp-8LHmLQ-8LEhAc-8LEhv4-8LHm9q-8LHm4J-8LEh2n-8LHkHC-8LHkyN-8LEgHR-8LEgEg-8LHkm1-5M46ux-7HZYRW-5M8grm-5M42Fe-szKsA-84niHx-6YaZqX-6qTFK6-8GS4Nn-8cHyak-8cLRVq-87pocf-vV4SRQ-8oFGQN
