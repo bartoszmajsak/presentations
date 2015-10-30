@@ -1,0 +1,10 @@
+= Taming microservices testing with *Docker* and *Arquillian Cube*
+include::conf/_settings.adoc[]
+
+include::content/bartosz.adoc[]
+include::content/02-microservices.adoc[]
+include::content/03-containers.adoc[]
+include::content/aslak.adoc[]
+include::content/04-arquillian-intro.adoc[]
+include::content/05-arquillian-cube.adoc[]
+include::content/06-conclusion.adoc[]

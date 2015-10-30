@@ -1,0 +1,76 @@
+[.topic.band]
+== !
+
+[{caption-off}, crole="band"]
+.Microservices
+image::microservices.jpg[]
+
+[NOTE.speaker]
+====
+Before we dive into cool new things we are working on in arquillian ecosystem let's lay the ground and talk about microservices for a second.
+
+Very popular these days even though not really new. Maybe the term is.
+
+What really is a microservice?  These are small, autonomous components that work together. Preffered communication is over the network. 
+
+It's essentially a piece of software which represents single concept from a given domain. For example: user registratrion or order status. 
+
+Small and focused on doing one thing well.
+
+But how small is small? Is it measured in lines of code?
+
+Rule of thumb which I've seen in several books is that microservice can by "rewritten from scratch within 2 weeks". It's a bit questionable especially when service itself does quite heavy algorithmic work, but in principle it is a good measure to keep in mind.
+
+====
+
+[.topic.bannerleft]
+== Principles
+
+[{caption-off}]
+image::bees.jpg[]
+
+* {point-label} Single Responsibility
+* {point-label} Loosely Coupled
+* {point-label} Deployed Independently
+
+[NOTE.speaker]
+====
+
+Single responsibility - It should does one thing and does it well. 
+
+Loosely coupled - can be changed without affecting other parts of the system. 
+
+====
+
+[.topic.lumaxart]
+== &#160;
+
+"Gather together those things that change for the same reason, and separate those things that change for different reasons."
+-- Robert C. Martin
+
+[.topic.bannerleft]
+== Benefits
+
+[{caption-off}]
+image::freedom.jpg[]
+
+* {point-label} Focus on *simplicity*
+* {point-label} Maintainability
+* {point-label} Performance and scalability
+* {point-label} Developer autonomy (*polyglot*)
+* {point-label} Composability
+
+[source,bash]
+----
+ps aux | grep eclipse | grep -v grep | awk '{print $2}' | xargs kill
+----
+
+
+[NOTE.speaker]
+====
+
+polyglot - you like scala, clojure, give it a try. it will obviously bring some challenges to the team but this is the beauty of our profession, that we can learn constantly.
+
+Linux programs composed together are in fact conceptually similar or are even an inspiration for the microservices movement
+
+====

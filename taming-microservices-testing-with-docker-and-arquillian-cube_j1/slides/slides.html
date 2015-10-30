@@ -1,0 +1,370 @@
+<!DOCTYPE html><html lang="en" class="aspect-16-9"><head><meta charset="UTF-8"><meta name="generator" content="Asciidoctor 1.5.2, dzslides backend"><title>Taming microservices testing with Docker and Arquillian Cube</title><link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,700,600,300,800"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css"><link rel="stylesheet" href="./dzslides/themes/highlight/asciidoctor.css"><link rel="stylesheet" href="./dzslides/themes/style/../../../assets/styles/jdd.css"><link rel="stylesheet" href="./dzslides/core/dzslides.css"><link rel="stylesheet" href="./dzslides/themes/transition/fade.css"></head><body><section class="title"><h1>Taming microservices testing with <strong>Docker</strong> and <strong>Arquillian Cube</strong></h1><footer><span class="author"></span><span class="hashtag">#arquillian #docker</span></footer></section><section class="topic bannerleft shadow"><h2><em>Bartosz Majsak</em></h2><figure><img src="assets/images/bartosz-profile.jpg" alt="Bartosz"><figcaption></figcaption></figure>
+<ul><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Arquillian Persistence Lead</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Cambridge Technology Partners</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span>  <span class="icon light"><i class="fa fa-twitter"></i></span> @majson  <span class="icon light"><i class="fa fa-github"></i></span> bartoszmajsak</li></ul></section>
+<section class="topic band"><h2>!</h2><figure><img src="assets/images/microservices.jpg" alt="microservices"><figcaption class="band">Microservices</figcaption></figure>
+<details><details open><summary>Notes</summary><p>Before we dive into cool new things we are working on in arquillian ecosystem let&#8217;s lay the ground and talk about microservices for a second.</p>
+<p>Very popular these days even though not really new. Maybe the term is.</p>
+<p>What really is a microservice?  These are small, autonomous components that work together. Preffered communication is over the network.</p>
+<p>It&#8217;s essentially a piece of software which represents single concept from a given domain. For example: user registratrion or order status.</p>
+<p>Small and focused on doing one thing well.</p>
+<p>But how small is small? Is it measured in lines of code?</p>
+<p>Rule of thumb which I&#8217;ve seen in several books is that microservice can by "rewritten from scratch within 2 weeks". It&#8217;s a bit questionable especially when service itself does quite heavy algorithmic work, but in principle it is a good measure to keep in mind.</p></details></details></section>
+<section class="topic bannerleft"><h2>Principles</h2><figure><img src="assets/images/bees.jpg" alt="bees"><figcaption></figcaption></figure>
+<ul><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Single Responsibility</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Loosely Coupled</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Deployed Independently</li></ul>
+<details><details open><summary>Notes</summary><p>Single responsibility - It should does one thing and does it well.</p>
+<p>Loosely coupled - can be changed without affecting other parts of the system.</p></details></details></section>
+<section class="topic lumaxart"><h2>&#160;</h2><blockquote><p>Gather together those things that change for the same reason, and separate those things that change for different reasons.</p><br><cite>Robert C. Martin</cite></blockquote></section>
+<section class="topic bannerleft"><h2>Benefits</h2><figure><img src="assets/images/freedom.jpg" alt="freedom"><figcaption></figcaption></figure>
+<ul><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Focus on <strong>simplicity</strong></li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Maintainability</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Performance and scalability</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Developer autonomy (<strong>polyglot</strong>)</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Composability</li></ul>
+<div class="listingblock"><pre class="highlight"><code class="bash">ps aux | grep eclipse | grep -v grep | awk '{print $2}' | xargs kill</code></pre></div>
+<details><details open><summary>Notes</summary><p>polyglot - you like scala, clojure, give it a try. it will obviously bring some challenges to the team but this is the beauty of our profession, that we can learn constantly.</p>
+<p>Linux programs composed together are in fact conceptually similar or are even an inspiration for the microservices movement</p></details></details></section>
+<section class="topic band"><h2>!</h2><figure><img src="assets/images/containers.jpg" alt="containers"><figcaption class="band">Containers</figcaption></figure>
+<details><details open><summary>Notes</summary><ul><li>We need to run those microservices somewhere.</li><li>We need to have a way to not only deploy and scale them but also when one will start failing it will not affect the other which is pretty much what happens in the monolith environments.</li><li>And here&#8217;s where Docker really shines</li></ul></details></details></section>
+<section class="topic bannerleft"><h2>Docker <strong>Lightweight VM</strong></h2><figure><img src="assets/images/docker.png" alt="Docker"><figcaption></figcaption></figure>
+<ul><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Application container engine</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Runs on top of Linux kernel <strong>*</strong></li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Own process space &amp; network interface</li></ul>
+<details><details open><summary>Notes</summary><p>You&#8217;ve probably seen several talks about Docker, so let&#8217;s just make a quick recap.</p>
+<p>Mention TestLab story</p></details></details></section>
+<section class="topic text"><h2><em>How to build a Docker image?</em></h2><ul><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> <code>docker pull &lt;image&gt;</code> and modify existing image</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> <code>Dockerfile</code></li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Use <code>docker-compose</code></li></ul>
+<figure><img src="assets/images/docker.png" alt="Docker"><figcaption></figcaption></figure>
+<details><details open><summary>Notes</summary><ul><li><code>docker-compose</code> based on yaml</li><li>we can apply changes to the running container and commit - which will result in new image being created.</li></ul></details></details></section>
+<section class="topic source"><h2>Sample Dockerfile</h2><div class="listingblock"><pre class="highlight"><code class="yaml">FROM phusion/baseimage
+
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+COPY index.html /usr/src/app/
+
+EXPOSE 8082
+CMD while true; do { echo -e 'HTTP/1.1 200 OK\r\n'; cat index.html; } | nc -vv -l 0.0.0.0 8082; done</code></pre></div>
+<div class="listingblock"><pre class="highlight"><code class="bash">docker build --tag javaone/webserver .
+
+docker run -d -p 8082:8082 javaone/webserver
+
+docker ps
+CONTAINER ID        IMAGE                          COMMAND                PORTS
+368bb70fa1f6        javaone2015/webserver              "/bin/sh -c 'while t   0.0.0.0:8082-&gt;8082/tcp</code></pre></div></section>
+<section class="intro topic lumaxart"><h2><strong>Demo</strong> time</h2></section>
+<section class="topic bannerleft shadow"><h2><em>Aslak Knutsen</em></h2><figure><img src="assets/images/aslak-profile.jpg" alt="Aslak"><figcaption></figcaption></figure>
+<ul><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Arquillian Project Lead</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Red Hat</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span>  <span class="icon light"><i class="fa fa-twitter"></i></span>  <span class="icon light"><i class="fa fa-github"></i></span> @aslakknutsen</li></ul></section>
+<section class="intro topic lumaxart"><h2>Introduction to <strong>Arquillian</strong></h2></section>
+<section><figure><img src="assets/images/1_select_a_container.png" alt="1 select a container"><figcaption></figcaption></figure></section>
+<section><figure><img src="assets/images/2_start_container.png" alt="2 start container"><figcaption></figcaption></figure></section>
+<section><figure><img src="assets/images/3_package_test_archive.png" alt="3 package test archive"><figcaption></figcaption></figure></section>
+<section><figure><img src="assets/images/4_run_test_in_container.png" alt="4 run test in container"><figcaption></figcaption></figure></section>
+<section><figure><img src="assets/images/5_test_result.png" alt="5 test result"><figcaption></figcaption></figure></section>
+<section><figure><img src="assets/images/6_disconnect_container.png" alt="6 disconnect container"><figcaption></figcaption></figure></section>
+<section class="source topic code-small"><h2>Write <strong>In-Container</strong> Test</h2><div class="listingblock"><pre class="highlight"><code class="java">@RunWith(Arquillian.class) // <i class="conum" data-value="1"></i><b>(1)</b>
+public class VolumeUnitsConverterInContainerTest {
+
+    @Deployment // <i class="conum" data-value="2"></i><b>(2)</b>
+    public static Archive&lt;?&gt; createDeployment() {
+        return ShrinkWrap.create(JavaArchive.class, "test.jar")
+                .addClass(VolumeUnitsConverter.class).addPackages(true, "org.assertj")
+                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+    }
+
+    @Inject // <i class="conum" data-value="3"></i><b>(3)</b>
+    private VolumeUnitsConverter converter;
+
+    @Test
+    public void should_convert_fluid_ounces_to_milliliters() {
+        // when
+        double ouncesInMl = converter.convertToMilliliters(8d);
+        // then
+        assertThat(ouncesInMl).isEqualTo(236.5882368d);
+    }
+}</code></pre></div>
+<div class="colist arabic"><table><tr><td><i class="conum" data-value="1"></i><b>1</b></td><td>Enable <strong>Arquillian</strong> JUnit Runner</td></tr><tr><td><i class="conum" data-value="2"></i><b>2</b></td><td><strong>Shrinkwrap</strong> fluent API for creating deployable artifact programmatically</td></tr><tr><td><i class="conum" data-value="3"></i><b>3</b></td><td>Test Enrichment</td></tr></table></div></section>
+<section class="source topic code-small"><h2>Write <strong>client</strong> Test</h2><div class="listingblock"><pre class="highlight"><code class="java">    @Deployment(testable = false) //<i class="conum" data-value="1"></i><b>(1)</b>
+    public static Archive&lt;?&gt; createDeployment() {
+        return ShrinkWrap.create(WebArchive.class, "test.war")
+                .addPackages(true, VolumeUnitsConverter.class.getPackage()) //<i class="conum" data-value="2"></i><b>(2)</b>
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+    }
+
+    @Test
+    public void should_convert_fluid_ounces_to_milliliters(@ArquillianResource URL applicationPath) {//<i class="conum" data-value="3"></i><b>(3)</b>
+        given().
+                baseUri(applicationPath.toString()).
+                pathParam("amount", "236.5882368").
+        when().
+                get("/convert/volume/ml/fl/{amount}").
+        then().
+                assertThat().body(is(equalTo("8.0")));
+
+    }</code></pre></div>
+<div class="colist arabic"><table><tr><td><i class="conum" data-value="1"></i><b>1</b></td><td>Deploy your application <strong>standalone</strong> to test from outside the container</td></tr><tr><td><i class="conum" data-value="2"></i><b>2</b></td><td><strong>Shrinkwrap</strong> lets you add packages recursively</td></tr><tr><td><i class="conum" data-value="3"></i><b>3</b></td><td>Injection of deployed application URL</td></tr></table></div></section>
+<section class="source topic"><h2>Add <strong>Arquillian</strong> to your project</h2><div class="listingblock"><pre class="highlight"><code class="xml">  &lt;dependencyManagement&gt;
+    &lt;dependencies&gt;
+      &lt;dependency&gt;
+        &lt;groupId&gt;org.arquillian&lt;/groupId&gt;
+        &lt;artifactId&gt;arquillian-universe&lt;/artifactId&gt;
+        &lt;version&gt;${version.arquillian_universe}&lt;/version&gt;
+        &lt;type&gt;pom&lt;/type&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+        &lt;scope&gt;import&lt;/scope&gt;
+      &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+  &lt;/dependencyManagement&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.arquillian.universe&lt;/groupId&gt;
+      &lt;artifactId&gt;arquillian-junit&lt;/artifactId&gt; <i class="conum" data-value="2"></i><b>(2)</b>
+      &lt;scope&gt;test&lt;/scope&gt;
+      &lt;type&gt;pom&lt;/type&gt;
+    &lt;/dependency&gt;</code></pre></div>
+<div class="colist arabic"><table><tr><td><i class="conum" data-value="1"></i><b>1</b></td><td>Arquillian comes in <code>bom</code> format. Add specific dependencies explicitly.</td></tr><tr><td><i class="conum" data-value="2"></i><b>2</b></td><td>Select test runner of your choice (<em>JUnit</em>, <em>TestNG</em>, <em>Spock</em> etc)</td></tr></table></div></section>
+<section class="source topic"><h2>Add <strong>Container</strong> of your choice</h2><div class="listingblock"><pre class="highlight"><code class="xml">    &lt;dependency&gt;
+      &lt;groupId&gt;org.arquillian.universe&lt;/groupId&gt;
+      &lt;artifactId&gt;arquillian-chameleon&lt;/artifactId&gt; <i class="conum" data-value="3"></i><b>(3)</b>
+      &lt;scope&gt;test&lt;/scope&gt;
+      &lt;type&gt;pom&lt;/type&gt;
+    &lt;/dependency&gt;</code></pre></div></section>
+<section class="intro topic lumaxart"><h2><strong>Demo</strong> time</h2></section>
+<section class="topic text"><h2><strong>Arquillian</strong> principles</h2><ul><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Portable tests</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Execute from wherever you want</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Testing Platform, not yet another testing library</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Flexible and extensible</li></ul></section>
+<section class="topic band"><h2>!</h2><figure><img src="assets/images/cubes.jpg" alt="cubes"><figcaption class="band">Arquillian <strong>Cube</strong></figcaption></figure></section>
+<section class="topic bannerleft"><h2>What is <strong>Arquillian Cube</strong>?</h2><figure><img src="assets/images/cube.jpg" alt="Rubik"><figcaption></figcaption></figure>
+<ul><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Manages lifecycle of <strong>Docker</strong> containers</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Uses <strong>Arquillian</strong> remote adapters</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Orchestrates containers</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Not only for <strong>Application Servers</strong><ul><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> <em>Dropwizard</em></li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> <em>Spring Boot</em></li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> <em>Netty</em></li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> <em>Node</em></li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> <em>Vert.x</em></li></ul></li></ul></section>
+<section class="topic text"><h2>Let&#8217;s run our <em>first test</em></h2><ul><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Simple JPA repository test</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Based on <code>jboss/wildfly</code> image</li></ul>
+<div class="listingblock"><pre class="highlight"><code class="yaml">from jboss/wildfly:9.0.0.Final
+RUN /opt/jboss/wildfly/bin/add-user.sh -up mgmt-users.properties admin Admin#70365 --silent
+CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]</code></pre></div></section>
+<section class="topic source"><h2>Sample <strong>JPA</strong> test</h2><div class="listingblock"><pre class="highlight"><code class="java">@RunWith(Arquillian.class)
+public class BeerRepositoryTest {
+
+    @Deployment
+    public static Archive&lt;?&gt; createDeployment() {
+        ...
+    }
+
+    @Inject
+    private BeerRepository beerRepository;
+
+    @Test
+    @UsingDataSet("beers.yml")
+    public void should_find_strongest_beer() throws Exception {
+        // given
+        String expectedName = "End of history";
+        BigDecimal expectedVoltage = BigDecimal.valueOf(55.0);
+
+        // when
+        Set&lt;Beer&gt; beers = beerRepository.strongest();
+        Beer firstBeer = beers.iterator().next();
+
+        // then
+        assertThat(firstBeer.getName()).isEqualTo(expectedName);
+        assertThat(firstBeer.getAlcohol()).isEqualByComparingTo(expectedVoltage);
+    }
+
+}</code></pre></div></section>
+<section class="topic source"><h2>Adding <strong>Arquillian Cube</strong></h2><div class="listingblock"><pre class="highlight"><code class="xml">    &lt;dependency&gt;
+      &lt;groupId&gt;org.arquillian.universe&lt;/groupId&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+      &lt;artifactId&gt;arquillian-cube-docker&lt;/artifactId&gt;
+      &lt;type&gt;pom&lt;/type&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;dependency&gt;</code></pre></div>
+<div class="colist arabic"><table><tr><td><i class="conum" data-value="1"></i><b>1</b></td><td><strong>Arquillian Cube</strong> dependency</td></tr></table></div></section>
+<section class="topic source"><h2>Adding <strong>Arquillian Persistence</strong></h2><div class="listingblock"><pre class="highlight"><code class="xml">    &lt;dependency&gt;
+      &lt;groupId&gt;org.arquillian.universe&lt;/groupId&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+      &lt;artifactId&gt;arquillian-persistence&lt;/artifactId&gt;
+      &lt;type&gt;pom&lt;/type&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;</code></pre></div>
+<div class="colist arabic"><table><tr><td><i class="conum" data-value="1"></i><b>1</b></td><td><strong>Arquillian Persistence</strong> dependency</td></tr></table></div></section>
+<section class="topic source"><h2>Adding <strong>Arquillian Chameleon</strong></h2><div class="listingblock"><pre class="highlight"><code class="xml">    &lt;dependency&gt;
+      &lt;groupId&gt;org.arquillian.universe&lt;/groupId&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+      &lt;artifactId&gt;arquillian-chameleon&lt;/artifactId&gt;
+      &lt;type&gt;pom&lt;/type&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;</code></pre></div>
+<div class="colist arabic"><table><tr><td><i class="conum" data-value="1"></i><b>1</b></td><td><strong>Arquillian Chameleon</strong> dependency</td></tr></table></div></section>
+<section class="topic source"><h2><strong>Configuration</strong></h2><div class="listingblock"><pre class="highlight"><code class="xml">  &lt;extension qualifier="docker"&gt;
+    &lt;property name="machineName"&gt;dev&lt;/property&gt;
+    &lt;property name="dockerContainers"&gt;<i class="conum" data-value="1"></i><b>(1)</b>
+      wildfly:
+        buildImage:
+          dockerfileLocation: src/test/resources/wildfly
+          noCache: true
+          remove: true
+        portBindings: [8081-&gt;8080/tcp, 9991-&gt;9990/tcp]
+    &lt;/property&gt;
+  &lt;/extension&gt;
+
+  &lt;container qualifier="wildfly" default="true"&gt;<i class="conum" data-value="2"></i><b>(2)</b>
+    &lt;configuration&gt;
+      &lt;property name="chameleonTarget"&gt;wildfly:9.0.0.Final:remote&lt;/property&gt;
+      &lt;property name="username"&gt;admin&lt;/property&gt;
+      &lt;property name="password"&gt;Admin#70365&lt;/property&gt;
+    &lt;/configuration&gt;
+  &lt;/container&gt;</code></pre></div>
+<div class="colist arabic"><table><tr><td><i class="conum" data-value="1"></i><b>1</b></td><td>Definition of <em>docker</em> container</td></tr><tr><td><i class="conum" data-value="2"></i><b>2</b></td><td>Remote <em>WildFly</em> container configuration based on <em>docker</em> image</td></tr></table></div></section>
+<section class="intro topic lumaxart"><h2><strong>Demo</strong> time</h2></section>
+<section class="topic band"><h2>!</h2><figure><img src="assets/images/orchestra.jpg" alt="orchestra"><figcaption class="band"><strong>Orchestration</strong></figcaption></figure></section>
+<section class="topic text"><h2>Orchestrated <em>tests</em></h2><p>Features</p>
+<ul><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Several dependent docker containers</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Starting dependent container(s) before running the test</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Composing containers based on templates</li></ul>
+<p>Our example</p>
+<ul><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> WildFly + External database(s)</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Runs in the container</li></ul></section>
+<section class="topic source code-small"><h2><em>Arquillian configuration</em></h2><div class="listingblock"><pre class="highlight"><code class="xml">    &lt;property name="autoStartContainers"&gt;${db:mysql_latest}&lt;/property&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+    &lt;property name="dockerContainers"&gt;
+      wildfly:
+        buildImage:
+          dockerfileLocation: src/test/resources/wildfly
+          noCache: true
+          remove: true
+        portBindings: [8081-&gt;8080/tcp, 9991-&gt;9990/tcp]
+      wildfly_mysql_latest:
+        extends: wildfly
+        links:
+          - mysql_latest:mysql
+      mysql_latest:
+        image: mysql:latest
+        exposedPorts: [3306/tcp]
+        env: [MYSQL_ROOT_PASSWORD=letmein, MYSQL_DATABASE=ape, MYSQL_USER=ape, MYSQL_PASSWORD=letmein]
+    &lt;/property&gt;</code></pre></div>
+<div class="colist arabic"><table><tr><td><i class="conum" data-value="1"></i><b>1</b></td><td><strong>Docker</strong> containers to start before  the <strong>application server</strong></td></tr><tr><td><i class="conum" data-value="2"></i><b>2</b></td><td><strong><code>extends</code></strong> allows to build on top of existing <em>docker</em> container</td></tr><tr><td><i class="conum" data-value="3"></i><b>3</b></td><td><strong><code>links</code></strong> to another container.</td></tr></table></div></section>
+<section class="topic source code-small"><h2><em>Docker Compose</em></h2><div class="listingblock"><pre class="highlight"><code class="xml">&lt;property name="definitionFormat"&gt;COMPOSE&lt;/property&gt;
+&lt;property name="dockerContainersFile"&gt;my-compose.yaml&lt;/property&gt;</code></pre></div>
+<div class="listingblock"><pre class="highlight"><code class="yaml">wildfly:
+   build: src/test/resources/wildfly/.
+   ports:
+      - "8081:8080"
+      - "9991:9990"
+   links:
+      - mysql_latest:mysql
+
+mysql_latest:
+   image: mysql:latest
+   expose:
+      - "3306"
+   environment:
+      - MYSQL_ROOT_PASSWORD=letmein
+      - MYSQL_DATABASE=ape
+      - MYSQL_USER=ape
+      - MYSQL_PASSWORD=letmein</code></pre></div></section>
+<section class="intro topic lumaxart"><h2><strong>Demo</strong> time</h2></section>
+<section class="topic band"><h2>!</h2><figure><img src="assets/images/empty_freigther.jpg" alt="empty freigther"><figcaption class="band"><strong>Containerless</strong></figcaption></figure></section>
+<section class="topic text"><h2><em>Containerless</em></h2><ul><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Any application that is deployed and runs in <strong>Docker</strong> container, including, but not limited to:<ul><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Dropwizard</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Netty</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> <strong>Node</strong></li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Spring Boot</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Vert.x</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> WildFly Swarm</li></ul></li></ul></section>
+<section class="topic source"><h2><em>Arquillian Cube</em> dependency</h2><div class="listingblock"><div class="title">pom.xml</div><pre class="highlight"><code class="xml">    &lt;dependency&gt;
+      &lt;groupId&gt;org.arquillian.universe&lt;/groupId&gt;
+      &lt;artifactId&gt;arquillian-cube-containerless&lt;/artifactId&gt;
+      &lt;type&gt;pom&lt;/type&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;</code></pre></div></section>
+<section class="source topic code-small"><h2><em>express.js</em> application</h2><div class="listingblock"><div class="title">app.js</div><pre class="highlight"><code class="js">var express = require('express');
+
+var app = express();
+
+app.get('/beer/strongest', function(req, res){
+    res.send({
+        name: 'Snake Venom',
+        brewery: {
+            name: 'Brewmeister',
+            country: 'Scotland'
+        },
+        abv: '67.5',
+        style: 'English Barleywine',
+        capacities: [ 0.275 ]
+    });
+});
+
+app.listen(8580);</code></pre></div></section>
+<section class="source topic code-small"><h2>The <em>test</em> itself</h2><div class="listingblock"><pre class="highlight"><code class="java">@RunWith(Arquillian.class)
+public class StrongestBeerNodeTest {
+
+    @Deployment(testable = false) //<i class="conum" data-value="1"></i><b>(1)</b>
+    public static GenericArchive createDeployment() {
+        return ShrinkWrap.create(GenericArchive.class, "strongest_beer_ms.tar")
+                .add(new FileAsset(new File("src/test/js/app.js")), "app.js")
+                .add(new FileAsset(new File("src/test/js/package.json")), "package.json");
+    }
+
+    @Test
+    public void should_find_strongest_beer(@ArquillianResource URL base) {//<i class="conum" data-value="2"></i><b>(2)</b>
+        given().
+                baseUri(base.toString()).
+        when().
+                get("/beer/strongest").
+        then().
+                assertThat().body("name", is(equalTo("Snake Venom")))
+                            .body("abv", is(equalTo("67.5")));
+    }
+}</code></pre></div>
+<div class="colist arabic"><table><tr><td><i class="conum" data-value="1"></i><b>1</b></td><td>Creates a <code>app.tar</code> file with all <strong>Node.js</strong> resources which are then copied to the <em>docker</em> container</td></tr><tr><td><i class="conum" data-value="2"></i><b>2</b></td><td><strong>URL</strong> of the application is injected as <code>@ArquillanResource</code></td></tr></table></div></section>
+<section class="topic source code-small"><h2><em>express.js</em> application running on <em>Node</em></h2><div class="listingblock"><div class="title">Dockerfile template</div><pre class="highlight"><code class="yaml">FROM node
+
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+<i class="conum" data-value="1"></i><b>(1)</b>
+ADD ${deployableFilename} /usr/src/app
+RUN npm install
+EXPOSE 8580
+
+CMD [ "npm", "start" ]</code></pre></div>
+<div class="colist arabic"><table><tr><td><i class="conum" data-value="1"></i><b>1</b></td><td><strong><code>${deployableFilename}</code></strong> will be replaced at runtime by archive created by <strong>Shrinkwrap</strong>.</td></tr></table></div></section>
+<section class="source topic code-small"><h2>arquillian.xml</h2><div class="listingblock"><pre class="highlight"><code class="xml">  &lt;extension qualifier="docker"&gt;
+    &lt;property name="machineName"&gt;dev&lt;/property&gt;
+    &lt;property name="dockerContainers"&gt;<i class="conum" data-value="1"></i><b>(1)</b>
+            node:
+              buildImage:
+                dockerfileLocation: src/test/resources
+                noCache: true
+                remove: true
+              await:
+                strategy: polling
+              portBindings: [8580/tcp]
+    &lt;/property&gt;
+  &lt;/extension&gt;
+  &lt;container qualifier="containerless" default="true"&gt;<i class="conum" data-value="2"></i><b>(2)</b>
+    &lt;configuration&gt;
+      &lt;property name="containerlessDocker"&gt;node&lt;/property&gt;<i class="conum" data-value="3"></i><b>(3)</b>
+      &lt;property name="embeddedPort"&gt;8580&lt;/property&gt;
+    &lt;/configuration&gt;
+  &lt;/container&gt;</code></pre></div>
+<div class="colist arabic"><table><tr><td><i class="conum" data-value="1"></i><b>1</b></td><td>Sets the location of <strong><code>dockerfileTemplate</code></strong> file</td></tr><tr><td><i class="conum" data-value="2"></i><b>2</b></td><td>Adds containerless adapter</td></tr><tr><td><i class="conum" data-value="3"></i><b>3</b></td><td>Define name of <strong><em>docker</em></strong> container to start</td></tr></table></div></section>
+<section class="intro topic lumaxart"><h2><strong>Demo</strong> time</h2></section>
+<section class="topic text"><h2>What&#8217;s coming in <strong>Cube</strong>?</h2></section>
+<section class="topic source"><h2><strong>Container Objects</strong></h2><div class="listingblock"><pre class="highlight"><code class="java">public class Service {
+
+   @CubeDescriptor
+   public static Archive&lt;?&gt; service() {
+      return ShrinkWrap.create(GenericArchive.class)
+         .add("my_file.txt")
+         .add(Descriptors.create(CubeDescriptor.class)
+            .build(Descriptors.create(DockerDescriptor.class)
+                  .from("tomcat")
+                  .add("my_file.txt")
+            )
+         );
+   }
+
+   @Cube("mysql_1")
+   private Backend backend;
+
+   @ArquillianResource
+   private HostIP host;
+
+   public URL getServiceURL() {
+      return new URL(host.getIP(), host.getPort());
+   }
+}</code></pre></div></section>
+<section class="topic source"><h2><strong>Container Objects</strong></h2><div class="listingblock"><pre class="highlight"><code class="java">@RunWith(Arquillian.class)
+public class Test {
+
+   @Cube("service1")
+   private Service service;
+
+   @Test
+   public void shouldX() {
+      given().
+         baseUri(service.getServiceURL()).
+      when().
+         get("/service/beer").
+      then().
+         assertThat()
+            .body("name", is(equalTo("Snake Venom")))
+            .body("abv", is(equalTo("67.5")));
+   }
+}</code></pre></div></section>
+<section class="topic text"><h2>What&#8217;s coming in <strong>Cube</strong>?</h2><ul><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Container Objects</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Kubernetes / OpenShift v3</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> CoreOS</li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> Mesos / Marathon</li></ul></section>
+<section class="intro topic lumaxart"><h2><strong>Thank you</strong></h2></section>
+<section class="topic text"><h2><strong>Next steps</strong></h2><ul><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> <a href="http://arquillian.org">arquillian.org</a></li><li> <span class="icon light"><i class="fa fa-caret-right"></i></span> <a href="http://discuss.arquillian.org">discuss.arquillian.org</a></li></ul>
+<img class="right" src="assets/images/arquillian.png" alt="Ike" width="200" height="200"></section><script src="./dzslides/core/dzslides.js"></script><script src="./dzslides/highlight/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad()</script></body></html>

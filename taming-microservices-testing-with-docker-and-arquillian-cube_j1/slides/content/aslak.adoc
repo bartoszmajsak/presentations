@@ -1,0 +1,10 @@
+[.topic.bannerleft.shadow]
+== _Aslak Knutsen_
+
+[{caption-off}]
+image::aslak-profile.jpg[Aslak]
+
+* {point-label} Arquillian Project Lead
+* {point-label} Red Hat
+* {point-label} {twitter} {github} @aslakknutsen
+

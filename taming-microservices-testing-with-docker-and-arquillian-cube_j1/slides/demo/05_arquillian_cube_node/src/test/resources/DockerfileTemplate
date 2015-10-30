@@ -1,0 +1,11 @@
+FROM node
+
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+# <1>
+ADD ${deployableFilename} /usr/src/app
+RUN npm install
+EXPOSE 8580
+
+CMD [ "npm", "start" ]

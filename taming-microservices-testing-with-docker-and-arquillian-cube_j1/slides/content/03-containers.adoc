@@ -1,0 +1,70 @@
+[.topic.band]
+== !
+
+[{caption-off}, crole="band"]
+.Containers
+image::containers.jpg[]
+
+[NOTE.speaker]
+====
+
+* We need to run those microservices somewhere.
+
+* We need to have a way to not only deploy and scale them but also when one will start failing it will not affect the other which is pretty much what happens in the monolith environments.
+
+* And here's where Docker really shines
+
+====
+
+[.topic.bannerleft]
+== Docker *Lightweight VM*
+[{caption-off}]
+image::docker.png[Docker]
+
+* {point-label} Application container engine  
+* {point-label} Runs on top of Linux kernel ***
+* {point-label} Own process space & network interface
+
+[NOTE.speaker]
+====
+You've probably seen several talks about Docker, so let's just make a quick recap.
+
+Mention TestLab story
+====
+
+[.topic.text]
+== _How to build a Docker image?_
+
+* {point-label} `docker pull <image>` and modify existing image
+* {point-label} `Dockerfile`
+* {point-label} Use `docker-compose`
+
+[{caption-off}]
+image::docker.png[Docker]
+
+[NOTE.speaker]
+====
+* `docker-compose` based on yaml
+* we can apply changes to the running container and commit - which will result in new image being created.
+====
+
+
+[.topic.source]
+== Sample Dockerfile
+
+[source,yaml]
+----
+include::../demo/01_docker/Dockerfile[]
+----
+
+[source,bash]
+----
+include::../demo/01_docker/docker.sh[]
+
+docker ps
+CONTAINER ID        IMAGE                          COMMAND                PORTS                    
+368bb70fa1f6        javaone2015/webserver              "/bin/sh -c 'while t   0.0.0.0:8082->8082/tcp                       
+----
+
+[.intro.topic.lumaxart]
+== *Demo* time

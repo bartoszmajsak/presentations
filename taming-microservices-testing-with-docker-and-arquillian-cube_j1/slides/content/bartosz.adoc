@@ -1,0 +1,10 @@
+[.topic.bannerleft.shadow]
+== _Bartosz Majsak_
+
+[{caption-off}]
+image::bartosz-profile.jpg[Bartosz]
+
+* {point-label} Arquillian Persistence Lead
+* {point-label} Cambridge Technology Partners
+* {point-label} {twitter} @majson {github} bartoszmajsak
+

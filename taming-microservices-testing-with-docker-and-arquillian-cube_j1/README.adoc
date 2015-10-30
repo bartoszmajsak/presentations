@@ -1,0 +1,35 @@
+# Presentation slides and demos from link:http://www.devnation.org/#78a815f69b6279e6f462baaaad485067[DevNation 2015 talk]
+
+## Content
+
+* Slides in http://asciidoctor.org/[Asciidoc]
+* https://github.com/bartoszmajsak/presentations/tree/master/taming-microservices-testing-with-docker-and-arquillian-cube/slides/demo[Demos]
+** https://github.com/bartoszmajsak/presentations/tree/master/taming-microservices-testing-with-docker-and-arquillian-cube/slides/demo/01_docker[01] - simple Docker container serving static html file through `netcat`
+** https://github.com/bartoszmajsak/presentations/tree/master/taming-microservices-testing-with-docker-and-arquillian-cube/slides/demo/02_arquillian_intro[02] - Arquillian tests for a simple CDI bean and REST resource
+** https://github.com/bartoszmajsak/presentations/tree/master/taming-microservices-testing-with-docker-and-arquillian-cube/slides/demo/03_arquillian_cube_jpa[03] - Arquillian in-container test of  a simple JPA repository running on WildFly within the Docker container (https://github.com/arquillian/arquillian-cube[Arquillian Cube] example)
+** https://github.com/bartoszmajsak/presentations/tree/master/taming-microservices-testing-with-docker-and-arquillian-cube/slides/demo/04_demo_cube_orchestration[04] - Arquillian Cube orchestration - Starting two Docker containers: WildFly and MySQL (linked together). The same tests as in 3rd example.
+** https://github.com/bartoszmajsak/presentations/tree/master/taming-microservices-testing-with-docker-and-arquillian-cube/slides/demo/05_arquillian_cube_node[05] - Arquillian Cube starting NodeJS+Express.js application and black-box tests for it.
+
+## Steps to view the presentation
+
+### Create Docker Machine (Optional)
+
+`docker-machine create --driver virtualbox --virtualbox-memory 4096 devnation-2015;`
+
+To point your Docker client at it, run this in your shell
+
+`eval "$(docker-machine env devnation-2015)"`
+
+### Start using docker-compose
+
+* `docker-compose -f _docker/slides.yml build`
+* `docker-compose -f _docker/slides.yml up`
+* `open http://{docker-machine-ip}:8080/`
+
+### Or simply use plain Docker
+
+`docker run -it -v $(pwd)/slides:/documents/ docker_asciidoctor`
+
+### If you have asciidoctor installed...
+`asciidoctor -T /documents/asciidoctor-backends/slim/dzslides slides.adoc`
+

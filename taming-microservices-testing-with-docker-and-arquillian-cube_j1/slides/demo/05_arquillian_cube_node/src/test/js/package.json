@@ -1,0 +1,11 @@
+{
+  "name": "strongest-beer-microservice",
+  "version": "0.0.1",
+  "description": "A NodeJS with express.js to run inside a docker container",
+  "author": "bartosz.majsak@gmail.com",
+  "license": "APLv2",
+  "dependencies": {
+    "express": "*"
+  },
+  "scripts": {"start": "node app.js"}
+}

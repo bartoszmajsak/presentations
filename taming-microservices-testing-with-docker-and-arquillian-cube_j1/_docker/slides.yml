@@ -1,0 +1,7 @@
+asciidoctorslides:
+  build: .
+  ports:
+    - "8080:8080"
+  volumes:
+    - ../slides:/documents/
+  working_dir: /documents
